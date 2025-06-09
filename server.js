@@ -2,6 +2,20 @@ const express = require('express');
 require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT;
+const db = require('./database/db');
+
+app.get('/test-db', async (req, res) => {
+  try {
+    const result = await db.query('SELECT NOW()');
+    res.json({
+      message: 'Database connection successful',
+      time: result.rows[0].now,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Database connection failed');
+  }
+});
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
