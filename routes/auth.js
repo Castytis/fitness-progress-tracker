@@ -48,4 +48,48 @@ router.post(
   }
 );
 
+router.post(
+  '/login',
+  [
+    body('username').notEmpty().withMessage('Username is required'),
+    body('password').notEmpty().withMessage('Password is required'),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { username, password } = req.body;
+
+    try {
+      const userResult = await db.query(
+        'SELECT * FROM users WHERE username = $1',
+        [username]
+      );
+
+      if (userResult.rows.length === 0) {
+        return res
+          .status(400)
+          .json({ message: 'Invalid username or password' });
+      }
+
+      const user = userResult.rows[0];
+
+      const isMatch = await bcrypt.compare(password, user.password_hash);
+
+      if (!isMatch) {
+        return res
+          .status(400)
+          .json({ message: 'Invalid username or password' });
+      }
+
+      res.json({ message: 'Login successful' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Server error' });
+    }
+  }
+);
+
 module.exports = router;
