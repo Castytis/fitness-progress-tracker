@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const { body, validationResult } = require('express-validator');
 const db = require('../database/db');
+const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
@@ -35,12 +36,23 @@ router.post(
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      await db.query(
-        'INSERT INTO users (username, password_hash) VALUES ($1, $2)',
+      const newUser = await db.query(
+        'INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING *',
         [username, hashedPassword]
       );
 
-      res.status(201).json({ message: 'User registered successfully' });
+      const user = newUser.rows[0];
+
+      const token = jwt.sign(
+        {
+          id: user.id,
+          username: user.username,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRATION }
+      );
+
+      res.status(201).json({ message: 'User registered successfully', token });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: 'Server error' });
@@ -84,7 +96,16 @@ router.post(
           .json({ message: 'Invalid username or password' });
       }
 
-      res.json({ message: 'Login successful' });
+      const token = jwt.sign(
+        {
+          id: user.id,
+          username: user.username,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRATION }
+      );
+
+      res.json({ message: 'Login successful', token });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: 'Server error' });

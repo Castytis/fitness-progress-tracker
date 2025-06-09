@@ -4,9 +4,11 @@ const app = express();
 const PORT = process.env.PORT;
 const db = require('./database/db');
 const authRouter = require('./routes/auth.js');
+const dashboardRouter = require('./routes/dashboard.js');
 
 app.use(express.json());
 app.use(authRouter);
+app.use(dashboardRouter);
 
 app.get('/test-db', async (req, res) => {
   try {
