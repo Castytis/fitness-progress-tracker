@@ -3,8 +3,8 @@ const router = express.Router();
 const authenticateToken = require('../middleware/authMiddleware');
 const db = require('../database/db');
 
-// Get all workouts
-router.get('/workouts', authenticateToken, async (req, res) => {
+// Get all users workouts
+router.get('/workouts/personal', authenticateToken, async (req, res) => {
   const userId = req.user.id;
 
   try {
@@ -19,7 +19,7 @@ router.get('/workouts', authenticateToken, async (req, res) => {
 });
 
 // Create a new workout
-router.post('/workouts', authenticateToken, async (req, res) => {
+router.post('/workouts/personal', authenticateToken, async (req, res) => {
   const {
     title,
     description,
@@ -27,14 +27,15 @@ router.post('/workouts', authenticateToken, async (req, res) => {
     duration_minutes,
     calories_burned,
     difficulty,
+    is_private,
   } = req.body;
 
   const userId = req.user.id;
 
   try {
     const result = await db.query(
-      `INSERT INTO workouts (user_id, title, description, workout_type, duration_minutes, calories_burned, difficulty)
-         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      `INSERT INTO workouts (user_id, title, description, workout_type, duration_minutes, calories_burned, difficulty, is_private)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
       [
         userId,
         title,
@@ -43,6 +44,7 @@ router.post('/workouts', authenticateToken, async (req, res) => {
         duration_minutes,
         calories_burned,
         difficulty,
+        is_private,
       ]
     );
 
@@ -55,8 +57,8 @@ router.post('/workouts', authenticateToken, async (req, res) => {
   }
 });
 
-// Update a workout
-router.put('/workouts/:id', authenticateToken, async (req, res) => {
+// Update a users workout
+router.put('/workouts/personal/:id', authenticateToken, async (req, res) => {
   const workoutId = req.params.id;
   const userId = req.user.id;
 
@@ -99,8 +101,8 @@ router.put('/workouts/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// Delete a workout
-router.delete('/workouts/:id', authenticateToken, async (req, res) => {
+// Delete a users workout
+router.delete('/workouts/personal/:id', authenticateToken, async (req, res) => {
   const workoutId = req.params.id;
   const userId = req.user.id;
 
