@@ -5,14 +5,14 @@ const PORT = process.env.PORT;
 const db = require('./database/db');
 const authRouter = require('./routes/auth.js');
 const dashboardRouter = require('./routes/dashboard.js');
-const personalWorkoutsRouter = require('./routes/personalWorkouts.js');
-const publicWorkoutsRouter = require('./routes/publicWorkouts.js');
+const personalExercisesRouter = require('./routes/personalExercises.js');
+const publicexercisesRouter = require('./routes/publicExercises.js');
 
 app.use(express.json());
 app.use(authRouter);
 app.use(dashboardRouter);
-app.use(personalWorkoutsRouter);
-app.use(publicWorkoutsRouter);
+app.use(personalExercisesRouter);
+app.use(publicexercisesRouter);
 
 app.get('/test-db', async (req, res) => {
   try {
