@@ -4,7 +4,7 @@ const authenticateToken = require('../middleware/authMiddleware');
 const db = require('../database/db');
 
 // Get all users exercises
-router.get('/exercises/personal', authenticateToken, async (req, res) => {
+router.get('/exercises/private', authenticateToken, async (req, res) => {
   const userId = req.user.id;
 
   try {
@@ -20,7 +20,7 @@ router.get('/exercises/personal', authenticateToken, async (req, res) => {
 });
 
 // Create a new exercises
-router.post('/exercises/personal', authenticateToken, async (req, res) => {
+router.post('/exercises/private', authenticateToken, async (req, res) => {
   const { name, description, category, muscle_group, difficulty, is_private } =
     req.body;
 
@@ -53,7 +53,7 @@ router.post('/exercises/personal', authenticateToken, async (req, res) => {
 });
 
 // Update a users exercises
-router.put('/exercises/personal/:id', authenticateToken, async (req, res) => {
+router.put('/exercises/private/:id', authenticateToken, async (req, res) => {
   const { name, description, category, muscle_group, difficulty, is_private } =
     req.body;
 
@@ -98,29 +98,25 @@ router.put('/exercises/personal/:id', authenticateToken, async (req, res) => {
 });
 
 // Delete a users exercises
-router.delete(
-  '/exercises/personal/:id',
-  authenticateToken,
-  async (req, res) => {
-    const exerciseId = req.params.id;
-    const userId = req.user.id;
+router.delete('/exercises/private/:id', authenticateToken, async (req, res) => {
+  const exerciseId = req.params.id;
+  const userId = req.user.id;
 
-    try {
-      const result = await db.query(
-        `DELETE FROM exercises WHERE id = $1 AND created_by = $2 RETURNING *`,
-        [exerciseId, userId]
-      );
+  try {
+    const result = await db.query(
+      `DELETE FROM exercises WHERE id = $1 AND created_by = $2 RETURNING *`,
+      [exerciseId, userId]
+    );
 
-      if (result.rows.length === 0) {
-        return res.status(404).json({ message: 'Exercise not found' });
-      }
-
-      res.json({ message: 'Exercise deleted successfully' });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'Server error' });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Exercise not found' });
     }
+
+    res.json({ message: 'Exercise deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
   }
-);
+});
 
 module.exports = router;
