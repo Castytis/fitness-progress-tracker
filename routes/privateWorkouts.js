@@ -104,4 +104,83 @@ router.post('/workouts/private', authenticateToken, async (req, res) => {
   }
 });
 
+// Update a workout
+router.put('/workouts/private/:id', authenticateToken, async (req, res) => {
+  const workoutId = req.params.id;
+  const userId = req.user.id;
+  const { name, description, is_private, exercises } = req.body;
+
+  try {
+    const workout = await db.query(
+      `
+        UPDATE workouts 
+        SET name = $1, description = $2, is_private = $3 
+        WHERE id = $4 AND created_by = $5
+        RETURNING *
+      `,
+      [name, description, is_private, workoutId, userId]
+    );
+
+    if (workout.rows.length === 0) {
+      return res.status(404).json({ message: 'Workout not found' });
+    }
+
+    await db.query(`DELETE FROM workout_exercises WHERE workout_id = $1`, [
+      workoutId,
+    ]);
+
+    for (const exercise of exercises) {
+      await db.query(
+        `
+          INSERT INTO workout_exercises (created_by, workout_id, exercise_id, sets, reps, duration_minutes, notes) 
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `,
+        [
+          userId,
+          workoutId,
+          exercise.exercise_id,
+          exercise.sets,
+          exercise.reps,
+          exercise.duration_minutes,
+          exercise.notes,
+        ]
+      );
+    }
+
+    res.json({
+      message: 'Workout updated successfully',
+      workout: workout.rows[0],
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Delete a workout
+router.delete('/workouts/private/:id', authenticateToken, async (req, res) => {
+  const workoutId = req.params.id;
+  const userId = req.user.id;
+
+  try {
+    const workout = await db.query(
+      `DELETE FROM workouts WHERE id=$1 AND created_by=$2 RETURNING *`,
+      [workoutId, userId]
+    );
+
+    if (workout.rows.length === 0) {
+      return res.status(404).json({ message: 'Workout not found' });
+    }
+
+    await db.query(`DELETE FROM workout_exercises WHERE workout_id = $1`, [
+      workoutId,
+    ]);
+
+    res.json({ message: 'Workout deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router;

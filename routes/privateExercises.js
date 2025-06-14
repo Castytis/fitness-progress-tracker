@@ -13,6 +13,10 @@ router.get('/exercises/private', authenticateToken, async (req, res) => {
       [userId]
     );
 
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'No exercises found' });
+    }
+
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
