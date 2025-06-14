@@ -64,8 +64,6 @@ router.post('/workouts/private', authenticateToken, async (req, res) => {
 
   const userId = req.user.id;
 
-  console.log(name, description, is_private, exercises);
-
   try {
     const result = await db.query(
       `
@@ -81,10 +79,11 @@ router.post('/workouts/private', authenticateToken, async (req, res) => {
     for (const exercise of exercises) {
       await db.query(
         `
-            INSERT INTO workout_exercises (workout_id, exercise_id, sets, reps, duration_minutes, notes) 
-            VALUES ($1, $2, $3, $4, $5, $6)
+            INSERT INTO workout_exercises (created_by, workout_id, exercise_id, sets, reps, duration_minutes, notes) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
         `,
         [
+          userId,
           workoutId,
           exercise.exercise_id,
           exercise.sets,
