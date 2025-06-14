@@ -3,7 +3,7 @@ const router = express.Router();
 const authenticateToken = require('../middleware/authMiddleware');
 const db = require('../database/db');
 
-// Get all workouts
+// Get all users workouts
 router.get('/workouts/private', authenticateToken, async (req, res) => {
   const userId = req.user.id;
 

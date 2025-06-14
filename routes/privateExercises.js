@@ -19,7 +19,29 @@ router.get('/exercises/private', authenticateToken, async (req, res) => {
   }
 });
 
-// Create a new exercises
+// Get specific exercise by ID
+router.get('/exercises/private/:id', authenticateToken, async (req, res) => {
+  const exerciseId = req.params.id;
+  const userId = req.user.id;
+
+  try {
+    const result = await db.query(
+      'SELECT * FROM exercises WHERE id = $1 AND created_by = $2',
+      [exerciseId, userId]
+    );
+
+    if (!result.rows.length) {
+      return res.status(404).json({ message: 'Exercise not found' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Create a new exercise
 router.post('/exercises/private', authenticateToken, async (req, res) => {
   const { name, description, category, muscle_group, difficulty, is_private } =
     req.body;
@@ -52,7 +74,7 @@ router.post('/exercises/private', authenticateToken, async (req, res) => {
   }
 });
 
-// Update a users exercises
+// Update exercise
 router.put('/exercises/private/:id', authenticateToken, async (req, res) => {
   const { name, description, category, muscle_group, difficulty, is_private } =
     req.body;
@@ -97,7 +119,7 @@ router.put('/exercises/private/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// Delete a users exercises
+// Delete exercise
 router.delete('/exercises/private/:id', authenticateToken, async (req, res) => {
   const exerciseId = req.params.id;
   const userId = req.user.id;
