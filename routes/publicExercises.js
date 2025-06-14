@@ -8,18 +8,16 @@ router.get('/exercises/public', authenticateToken, async (req, res) => {
   try {
     const result = await db.query(`
       SELECT 
-        e.id,
-        u.username,
-        e.name,
-        e.description,
-        e.category,
-        e.muscle_group,
-        e.difficulty,
-        e.is_private,
-        e.created_at
-      FROM exercises e
-      JOIN users u ON e.created_by = u.id
-      WHERE e.is_private = false
+        id,
+        name,
+        description,
+        category,
+        muscle_group,
+        difficulty,
+        is_private,
+        created_at
+      FROM exercises 
+      WHERE is_private = false
     `);
 
     res.json(result.rows);
@@ -29,38 +27,38 @@ router.get('/exercises/public', authenticateToken, async (req, res) => {
   }
 });
 
-// Get public exercises by user ID
-router.get(
-  '/exercises/:user_id/public',
-  authenticateToken,
-  async (req, res) => {
-    const userId = req.params.user_id;
+// Get specific public exercise by ID
+router.get('/exercises/public/:id', authenticateToken, async (req, res) => {
+  const exercise_id = req.params.id;
 
-    try {
-      const result = await db.query(
-        `
+  try {
+    const result = await db.query(
+      `
       SELECT 
-        e.id,
-        e.name,
-        e.description,
-        e.category,
-        e.muscle_group,
-        e.difficulty,
-        e.is_private,
-        e.created_at
-      FROM exercises e
-      WHERE e.is_private = false
-      AND e.created_by = $1
+        id,
+        name,
+        description,
+        category,
+        muscle_group,
+        difficulty,
+        is_private,
+        created_at
+      FROM exercises 
+      WHERE is_private = false 
+      AND id = $1
       `,
-        [userId]
-      );
+      [exercise_id]
+    );
 
-      res.json(result.rows);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server error' });
+    if (!result.rows.length) {
+      return res.status(404).json({ message: 'Exercise not found' });
     }
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
-);
+});
 
 module.exports = router;
