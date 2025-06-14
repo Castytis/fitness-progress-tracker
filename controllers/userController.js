@@ -4,7 +4,9 @@ const db = require('../database/db');
 
 const registerUser = async ({ email, username, password }) => {
   if (!email || !username || !password) {
-    throw new Error('Email, username, and password are required');
+    const error = new Error('Email, username, and password are required');
+    error.statusCode = 400;
+    throw error;
   }
 
   const existingUser = await db.query(
@@ -13,7 +15,9 @@ const registerUser = async ({ email, username, password }) => {
   );
 
   if (existingUser.rows.length > 0) {
-    throw new Error('Username or email already exists');
+    const error = new Error('Username or email already exists');
+    error.statusCode = 400;
+    throw error;
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -39,7 +43,9 @@ const registerUser = async ({ email, username, password }) => {
 
 const loginUser = async ({ email, password }) => {
   if (!email || !password) {
-    throw new Error('Email and password are required');
+    const error = new Error('Email and password are required');
+    error.statusCode = 400;
+    throw error;
   }
 
   const userResult = await db.query('SELECT * FROM users WHERE email = $1', [
@@ -47,7 +53,9 @@ const loginUser = async ({ email, password }) => {
   ]);
 
   if (userResult.rows.length === 0) {
-    throw new Error('Invalid email or password');
+    const error = new Error('Invalid email or password');
+    error.statusCode = 400;
+    throw error;
   }
 
   const user = userResult.rows[0];
@@ -55,7 +63,9 @@ const loginUser = async ({ email, password }) => {
   const isMatch = await bcrypt.compare(password, user.password_hash);
 
   if (!isMatch) {
-    throw new Error('Invalid email or password');
+    const error = new Error('Invalid email or password');
+    error.statusCode = 400;
+    throw error;
   }
 
   const token = jwt.sign(

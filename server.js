@@ -1,8 +1,12 @@
 const express = require('express');
 require('dotenv').config();
+
 const app = express();
 const PORT = process.env.PORT;
 const db = require('./database/db');
+
+const errorHandler = require('./middleware/errorHandler.js');
+
 const authRouter = require('./routes/auth.js');
 const dashboardRouter = require('./routes/dashboard.js');
 const privateExercisesRouter = require('./routes/privateExercises.js');
@@ -11,12 +15,15 @@ const privateWorkoutsRouter = require('./routes/privateWorkouts.js');
 const publicWorkoutsRouter = require('./routes/publicWorkouts.js');
 
 app.use(express.json());
+
 app.use(authRouter);
 app.use(dashboardRouter);
 app.use(privateExercisesRouter);
 app.use(publicExercisesRouter);
 app.use(privateWorkoutsRouter);
 app.use(publicWorkoutsRouter);
+
+app.use(errorHandler);
 
 app.get('/test-db', async (req, res) => {
   try {

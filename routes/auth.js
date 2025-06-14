@@ -29,18 +29,13 @@ router.post(
 
     const { email, username, password } = req.body;
 
-    try {
-      const { token } = await registerUser({
-        email: email.toLowerCase().trim(),
-        username: username.trim(),
-        password: password.trim(),
-      });
+    const { token } = await registerUser({
+      email: email.toLowerCase().trim(),
+      username: username.trim(),
+      password: password.trim(),
+    });
 
-      res.status(201).json({ message: 'User registered successfully', token });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'Server error' });
-    }
+    res.status(201).json({ message: 'User registered successfully', token });
   }
 );
 
@@ -59,17 +54,12 @@ router.post(
 
     const { email, password } = req.body;
 
-    try {
-      const { token } = await loginUser({
-        email: email.toLowerCase().trim(),
-        password: password.trim(),
-      });
+    const { token } = await loginUser({
+      email: email.toLowerCase().trim(),
+      password: password.trim(),
+    });
 
-      res.status(201).json({ message: 'Login successfull', token });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'Server error' });
-    }
+    res.status(201).json({ message: 'Login successfull', token });
   }
 );
 
