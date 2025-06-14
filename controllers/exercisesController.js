@@ -1,5 +1,6 @@
 const db = require('../database/db');
 
+// Users exercises
 const getAllUsersExercises = async (userId) => {
   const result = await db.query(
     'SELECT * FROM exercises WHERE created_by = $1',
@@ -21,7 +22,7 @@ const getUsersExerciseById = async (userId, exerciseId) => {
     throw error;
   }
 
-  return { exercise: result.rows[0] };
+  return { exercises: result.rows[0] };
 };
 
 const createExercise = async (
@@ -99,10 +100,59 @@ const deleteUsersExercise = async (userId, exerciseId) => {
   return { exercise: result.rows[0] };
 };
 
+// All public exercises
+const getAllPublicExercises = async () => {
+  const result = await db.query(`
+      SELECT 
+        id,
+        name,
+        description,
+        category,
+        muscle_group,
+        difficulty,
+        is_private,
+        created_at
+      FROM exercises 
+      WHERE is_private = false
+    `);
+
+  return { exercises: result.rows };
+};
+
+const getPublicExerciseById = async (exerciseId) => {
+  const result = await db.query(
+    `
+      SELECT 
+        id,
+        name,
+        description,
+        category,
+        muscle_group,
+        difficulty,
+        is_private,
+        created_at
+      FROM exercises 
+      WHERE is_private = false 
+      AND id = $1
+      `,
+    [exerciseId]
+  );
+
+  if (!result.rows.length) {
+    const error = new Error('Exercise not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return { exercise: result.rows[0] };
+};
+
 module.exports = {
   getAllUsersExercises,
   getUsersExerciseById,
   createExercise,
   updateUsersExercise,
   deleteUsersExercise,
+  getAllPublicExercises,
+  getPublicExerciseById,
 };
