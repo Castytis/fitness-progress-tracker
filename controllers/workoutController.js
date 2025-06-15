@@ -1,5 +1,6 @@
 const db = require('../database/db');
 
+// Users exercises
 const getAllUsersWorkouts = async (userId) => {
   const result = await db.query(
     `SELECT * FROM workouts WHERE created_by = $1`,
@@ -19,7 +20,7 @@ const getAllUsersWorkouts = async (userId) => {
     workout.exercises = exercisesResult.rows;
   }
 
-  return { workout: result.rows };
+  return { workouts: result.rows };
 };
 
 const getUsersWorkoutById = async (userId, workoutId) => {
@@ -40,7 +41,7 @@ const getUsersWorkoutById = async (userId, workoutId) => {
   const workout = result.rows[0];
   workout.exercises = exercisesResult.rows;
 
-  return { workout: result.rows };
+  return { workout: result.rows[0] };
 };
 
 const createWorkout = async (
@@ -79,7 +80,7 @@ const createWorkout = async (
     );
   }
 
-  return { workout: result.rows };
+  return { workout: result.rows[0] };
 };
 
 const updateUsersWorkout = async (
@@ -128,7 +129,7 @@ const updateUsersWorkout = async (
     );
   }
 
-  return { workout: result.rows };
+  return { workout: result.rows[0] };
 };
 
 const deleteUsersWorkout = async (userId, workoutId) => {
@@ -150,10 +151,38 @@ const deleteUsersWorkout = async (userId, workoutId) => {
   return { message: 'Workout deleted successfully' };
 };
 
+// All public workouts
+const getAllPublicWorkouts = async () => {
+  const result = await db.query(
+    `SELECT * FROM workouts WHERE is_private = false`
+  );
+
+  return { workouts: result.rows };
+};
+
+const getPublicWorkoutById = async (workoutId) => {
+  const result = await db.query(
+    `SELECT * FROM workouts WHERE id = $1 AND is_private = false`,
+    [workoutId]
+  );
+
+  const exercisesResult = await db.query(
+    `SELECT exercise_id, sets, reps, duration_minutes, notes FROM workout_exercises WHERE workout_id = $1`,
+    [workoutId]
+  );
+
+  const workout = result.rows[0];
+  workout.exercises = exercisesResult.rows;
+
+  return { workout: result.rows[0] };
+};
+
 module.exports = {
   getAllUsersWorkouts,
   getUsersWorkoutById,
   createWorkout,
   updateUsersWorkout,
   deleteUsersWorkout,
+  getAllPublicWorkouts,
+  getPublicWorkoutById,
 };
