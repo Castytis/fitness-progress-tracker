@@ -101,8 +101,10 @@ const deleteUsersExercise = async (userId, exerciseId) => {
 };
 
 // All public exercises
-const getAllPublicExercises = async () => {
-  const result = await db.query(`
+const getAllPublicExercises = async (filters) => {
+  const { name, category, muscle_group, difficulty } = filters;
+
+  let baseQuery = `
       SELECT 
         id,
         name,
@@ -114,8 +116,40 @@ const getAllPublicExercises = async () => {
         created_at
       FROM exercises 
       WHERE is_private = false
-    `);
+    `;
 
+  const values = [];
+  let i = 1;
+
+  if (name) {
+    baseQuery += ` AND LOWER(name LIKE $${i}`;
+    values.push(`%${name}%`);
+    i++;
+  }
+
+  if (category) {
+    baseQuery += ` AND category = $${i}`;
+    values.push(category);
+    i++;
+  }
+
+  if (muscle_group) {
+    baseQuery += ` AND muscle_group = $${i}`;
+    values.push(muscle_group);
+    i++;
+  }
+
+  if (difficulty) {
+    baseQuery += ` AND difficulty = $${i}`;
+    values.push(difficulty);
+    i++;
+  }
+
+  baseQuery += ' ORDER BY name ASC';
+
+  console.log(values);
+
+  const result = await db.query(baseQuery, values);
   return { exercises: result.rows };
 };
 

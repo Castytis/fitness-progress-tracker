@@ -9,7 +9,8 @@ const {
 } = require('../controllers/exercisesController.js');
 
 router.get('/exercises/public', authenticateToken, async (req, res) => {
-  const exercises = await getAllPublicExercises();
+  const filters = req.query;
+  const exercises = await getAllPublicExercises(filters);
 
   res.json(exercises.exercises);
 });
