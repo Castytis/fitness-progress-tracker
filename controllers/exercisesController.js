@@ -1,13 +1,17 @@
 const db = require('../database/db');
+const { buildExerciseFilterQuery } = require('../helpers/exerciseFilter');
 
 // Users exercises
-const getAllUsersExercises = async (userId) => {
-  const result = await db.query(
-    'SELECT * FROM exercises WHERE created_by = $1',
-    [userId]
-  );
+const getAllUsersExercises = async (userId, filters) => {
+  let baseQuery = 'SELECT * FROM exercises WHERE created_by = $1';
 
-  return { exercise: result.rows };
+  const { query, values } = buildExerciseFilterQuery(baseQuery, filters, 2);
+
+  const finalQuery = query + ' ORDER BY name ASC';
+
+  const result = await db.query(finalQuery, [userId, ...values]);
+
+  return { exercises: result.rows };
 };
 
 const getUsersExerciseById = async (userId, exerciseId) => {
@@ -102,8 +106,6 @@ const deleteUsersExercise = async (userId, exerciseId) => {
 
 // All public exercises
 const getAllPublicExercises = async (filters) => {
-  const { name, category, muscle_group, difficulty } = filters;
-
   let baseQuery = `
       SELECT 
         id,
@@ -118,38 +120,11 @@ const getAllPublicExercises = async (filters) => {
       WHERE is_private = false
     `;
 
-  const values = [];
-  let i = 1;
+  const { query, values } = buildExerciseFilterQuery(baseQuery, filters);
 
-  if (name) {
-    baseQuery += ` AND LOWER(name LIKE $${i}`;
-    values.push(`%${name}%`);
-    i++;
-  }
+  const finalQuery = query + ' ORDER BY name ASC';
 
-  if (category) {
-    baseQuery += ` AND category = $${i}`;
-    values.push(category);
-    i++;
-  }
-
-  if (muscle_group) {
-    baseQuery += ` AND muscle_group = $${i}`;
-    values.push(muscle_group);
-    i++;
-  }
-
-  if (difficulty) {
-    baseQuery += ` AND difficulty = $${i}`;
-    values.push(difficulty);
-    i++;
-  }
-
-  baseQuery += ' ORDER BY name ASC';
-
-  console.log(values);
-
-  const result = await db.query(baseQuery, values);
+  const result = await db.query(finalQuery, values);
   return { exercises: result.rows };
 };
 

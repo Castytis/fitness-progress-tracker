@@ -11,8 +11,9 @@ const {
 
 router.get('/exercises/private', authenticateToken, async (req, res) => {
   const userId = req.user.id;
+  const filters = req.query;
 
-  const exercises = await getAllUsersExercises(userId);
+  const exercises = await getAllUsersExercises(userId, filters);
 
   res.json(exercises.exercises);
 });
