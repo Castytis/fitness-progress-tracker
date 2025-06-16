@@ -8,7 +8,8 @@ const {
 } = require('../controllers/workoutController');
 
 router.get('/workouts/public', authenticateToken, async (req, res) => {
-  const workouts = await getAllPublicWorkouts();
+  const filters = req.query;
+  const workouts = await getAllPublicWorkouts(filters);
 
   res.json(workouts.workouts);
 });

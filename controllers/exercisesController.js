@@ -26,7 +26,7 @@ const getUsersExerciseById = async (userId, exerciseId) => {
     throw error;
   }
 
-  return { exercises: result.rows[0] };
+  return { exercise: result.rows[0] };
 };
 
 const createExercise = async (
@@ -101,7 +101,7 @@ const deleteUsersExercise = async (userId, exerciseId) => {
     throw error;
   }
 
-  return { exercise: result.rows[0] };
+  return { message: 'Exercise deleted successfully' };
 };
 
 // All public exercises

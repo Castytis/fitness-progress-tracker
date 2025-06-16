@@ -59,7 +59,7 @@ router.post(
       password: password.trim(),
     });
 
-    res.status(201).json({ message: 'Login successfull', token });
+    res.status(200).json({ message: 'Login successfull', token });
   }
 );
 

@@ -71,9 +71,9 @@ router.delete('/exercises/private/:id', authenticateToken, async (req, res) => {
   const exerciseId = req.params.id;
   const userId = req.user.id;
 
-  await deleteUsersExercise(userId, exerciseId);
+  const exercise = await deleteUsersExercise(userId, exerciseId);
 
-  res.json({ message: 'Successfully deleted exercise' });
+  res.json(exercise);
 });
 
 module.exports = router;

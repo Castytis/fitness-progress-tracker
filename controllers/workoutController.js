@@ -1,11 +1,14 @@
 const db = require('../database/db');
+const { buildWorkoutFilterQuery } = require('../helpers/workoutFilter');
 
 // Users exercises
-const getAllUsersWorkouts = async (userId) => {
-  const result = await db.query(
-    `SELECT * FROM workouts WHERE created_by = $1`,
-    [userId]
-  );
+const getAllUsersWorkouts = async (userId, filters = {}) => {
+  let baseQuery = `SELECT * FROM workouts WHERE created_by = $1`;
+
+  const { query, values } = buildWorkoutFilterQuery(baseQuery, filters, 2);
+  const finalQuery = query + ' ORDER BY name ASC NULLS LAST';
+
+  const result = await db.query(finalQuery, [userId, ...values]);
 
   if (result.rows.length === 0) {
     return { workouts: [] };
@@ -20,7 +23,7 @@ const getAllUsersWorkouts = async (userId) => {
     workout.exercises = exercisesResult.rows;
   }
 
-  return { workouts: result.rows };
+  return { workouts: workouts };
 };
 
 const getUsersWorkoutById = async (userId, workoutId) => {
@@ -152,10 +155,14 @@ const deleteUsersWorkout = async (userId, workoutId) => {
 };
 
 // All public workouts
-const getAllPublicWorkouts = async () => {
-  const result = await db.query(
-    `SELECT * FROM workouts WHERE is_private = false`
-  );
+const getAllPublicWorkouts = async (filters) => {
+  const baseQuery = `SELECT * FROM workouts WHERE is_private = false`;
+
+  const { query, values } = buildWorkoutFilterQuery(baseQuery, filters);
+
+  const finalQuery = query + ' ORDER BY name ASC';
+
+  const result = await db.query(finalQuery, values);
 
   return { workouts: result.rows };
 };

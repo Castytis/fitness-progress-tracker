@@ -12,10 +12,11 @@ const {
 
 router.get('/workouts/private', authenticateToken, async (req, res) => {
   const userId = req.user.id;
+  const filters = req.query;
 
-  const workouts = await getAllUsersWorkouts(userId);
+  const workouts = await getAllUsersWorkouts(userId, filters);
 
-  res.json(workouts.workout);
+  res.json(workouts.workouts);
 });
 
 router.get('/workouts/private/:id', authenticateToken, async (req, res) => {
@@ -66,7 +67,7 @@ router.delete('/workouts/private/:id', authenticateToken, async (req, res) => {
 
   const workout = await deleteUsersWorkout(userId, workoutId);
 
-  res.json(workout.message);
+  res.json(workout);
 });
 
 module.exports = router;
