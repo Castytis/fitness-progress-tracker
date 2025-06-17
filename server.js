@@ -13,6 +13,7 @@ const privateExercisesRouter = require('./routes/privateExercises.js');
 const publicExercisesRouter = require('./routes/publicExercises.js');
 const privateWorkoutsRouter = require('./routes/privateWorkouts.js');
 const publicWorkoutsRouter = require('./routes/publicWorkouts.js');
+const profileRouter = require('./routes/profile.js');
 
 app.use(express.json());
 
@@ -22,6 +23,7 @@ app.use(privateExercisesRouter);
 app.use(publicExercisesRouter);
 app.use(privateWorkoutsRouter);
 app.use(publicWorkoutsRouter);
+app.use(profileRouter);
 
 app.use(errorHandler);
 
