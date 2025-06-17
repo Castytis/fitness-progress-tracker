@@ -97,7 +97,10 @@ const updateUsersWorkout = async (
   const result = await db.query(
     `
         UPDATE workouts 
-        SET name = $1, description = $2, is_private = $3 
+        SET 
+          name = COALESCE($1, name),  
+          description = COALESCE($2, description), 
+          is_private = COALESCE($3, is_private) 
         WHERE id = $4 AND created_by = $5
         RETURNING *
       `,
@@ -110,26 +113,28 @@ const updateUsersWorkout = async (
     throw error;
   }
 
-  await db.query(`DELETE FROM workout_exercises WHERE workout_id = $1`, [
-    workoutId,
-  ]);
+  if (Array.isArray(exercises) && exercises.length > 0) {
+    await db.query(`DELETE FROM workout_exercises WHERE workout_id = $1`, [
+      workoutId,
+    ]);
 
-  for (const exercise of exercises) {
-    await db.query(
-      `
+    for (const exercise of exercises) {
+      await db.query(
+        `
           INSERT INTO workout_exercises (created_by, workout_id, exercise_id, sets, reps, duration_minutes, notes) 
           VALUES ($1, $2, $3, $4, $5, $6, $7)
         `,
-      [
-        userId,
-        workoutId,
-        exercise.exercise_id,
-        exercise.sets,
-        exercise.reps,
-        exercise.duration_minutes,
-        exercise.notes,
-      ]
-    );
+        [
+          userId,
+          workoutId,
+          exercise.exercise_id,
+          exercise.sets,
+          exercise.reps,
+          exercise.duration_minutes,
+          exercise.notes,
+        ]
+      );
+    }
   }
 
   return { workout: result.rows[0] };

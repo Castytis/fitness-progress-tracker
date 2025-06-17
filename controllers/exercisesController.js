@@ -60,12 +60,12 @@ const updateUsersExercise = async (
 ) => {
   const result = await db.query(
     `UPDATE exercises
-       SET name = $1,
-           description = $2,
-           category = $3,
-           muscle_group = $4,
-           difficulty = $5,
-           is_private = $6
+       SET name = COALESCE($1, name),
+          description = COALESCE($2, description),
+          category = COALESCE($3, category),
+          muscle_group = COALESCE($4, muscle_group),
+          difficulty = COALESCE($5, difficulty),
+          is_private = COALESCE($6, is_private)
        WHERE id = $7 AND created_by = $8
        RETURNING *`,
     [
