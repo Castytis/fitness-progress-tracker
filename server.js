@@ -14,6 +14,7 @@ const publicExercisesRouter = require('./routes/publicExercises.js');
 const privateWorkoutsRouter = require('./routes/privateWorkouts.js');
 const publicWorkoutsRouter = require('./routes/publicWorkouts.js');
 const profileRouter = require('./routes/profile.js');
+const weightRouter = require('./routes/weightTracking.js');
 
 app.use(express.json());
 
@@ -24,6 +25,7 @@ app.use(publicExercisesRouter);
 app.use(privateWorkoutsRouter);
 app.use(publicWorkoutsRouter);
 app.use(profileRouter);
+app.use(weightRouter);
 
 app.use(errorHandler);
 
