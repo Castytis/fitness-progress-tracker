@@ -6,7 +6,13 @@ const {
   logCompletedWorkout,
 } = require('../controllers/workoutHistoryController');
 
-router.get('/workouts/history', authenticateToken, async (req, res) => {});
+router.get('/workouts/history', authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+
+  const workoutHistory = await getWorkoutHistory(userId);
+
+  res.json(workoutHistory.workouts);
+});
 
 router.post('/workouts/complete/:id', authenticateToken, async (req, res) => {
   const userId = req.user.id;
