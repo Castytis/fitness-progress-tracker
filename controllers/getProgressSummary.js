@@ -10,7 +10,7 @@ const getWeekStart = () => {
 
 const getProgressSummary = async (userId) => {
   const weekStart = getWeekStart();
-  const weekResult = await db.query(
+  const completedWorkouts = await db.query(
     `
         SELECT COUNT(*) 
         FROM workout_history 
@@ -20,8 +20,21 @@ const getProgressSummary = async (userId) => {
     [userId, weekStart]
   );
 
+  const listOfCompletedWorkouts = await db.query(
+    `
+        SELECT wh.id, wh.completed_at, w.name 
+        FROM workout_history wh
+        JOIN workouts w ON wh.workout_id = w.id
+        WHERE wh.user_id = $1
+        AND wh.completed_at >= $2
+        ORDER BY wh.completed_at DESC
+    `,
+    [userId, weekStart]
+  );
+
   return {
-    completedWorkouts: weekResult.rows[0].count,
+    completedWorkouts: completedWorkouts.rows[0].count,
+    listOfComepletedWorkouts: listOfCompletedWorkouts.rows,
   };
 };
 
