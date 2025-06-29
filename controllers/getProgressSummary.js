@@ -8,6 +8,15 @@ const getWeekStart = () => {
   return now;
 };
 
+const calculateWeightChange = (weightEntries) => {
+  if (weightEntries.length >= 2) {
+    const first = Number(weightEntries[0].weight_kg);
+    const last = Number(weightEntries[weightEntries.length - 1].weight_kg);
+    return last - first;
+  }
+  return null;
+};
+
 const getProgressSummary = async (userId) => {
   const weekStart = getWeekStart();
   const completedWorkouts = await db.query(
@@ -32,9 +41,23 @@ const getProgressSummary = async (userId) => {
     [userId, weekStart]
   );
 
+  const weightEntries = await db.query(
+    `
+        SELECT weight_kg, recorded_at
+        FROM weight_history
+        WHERE user_id = $1
+        AND recorded_at >= $2
+        ORDER BY recorded_at ASC
+    `,
+    [userId, weekStart]
+  );
+
+  const weeklyWeightChange = calculateWeightChange(weightEntries.rows);
+
   return {
     completedWorkouts: completedWorkouts.rows[0].count,
-    listOfComepletedWorkouts: listOfCompletedWorkouts.rows,
+    listOfCompletedWorkouts: listOfCompletedWorkouts.rows,
+    weeklyWeightChange,
   };
 };
 
