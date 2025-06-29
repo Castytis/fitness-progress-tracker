@@ -17,6 +17,7 @@ const profileRouter = require('./routes/profile.js');
 const weightRouter = require('./routes/weightTracking.js');
 const workoutHistoryRouter = require('./routes/workoutHistory.js');
 const favoriteWorkoutsRouter = require('./routes/favoriteWorkouts.js');
+const progressRouter = require('./routes/progress.js');
 
 app.use(express.json());
 
@@ -30,6 +31,7 @@ app.use(profileRouter);
 app.use(weightRouter);
 app.use(workoutHistoryRouter);
 app.use(favoriteWorkoutsRouter);
+app.use(progressRouter);
 
 app.use(errorHandler);
 
