@@ -37,10 +37,12 @@ const getUsersWorkoutById = async (userId, workoutId) => {
   }
 
   const exercisesResult = await db.query(
-    `SELECT exercise_id, sets, reps, duration_minutes, notes FROM workout_exercises WHERE workout_id = $1`,
+    `SELECT e.name AS exercise_name, we.sets, we.reps, we.duration_minutes
+           FROM workout_exercises we
+           JOIN exercises e ON we.exercise_id = e.id
+           WHERE we.workout_id = $1`,
     [workoutId]
   );
-
   const workout = result.rows[0];
   workout.exercises = exercisesResult.rows;
 
