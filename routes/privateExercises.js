@@ -9,71 +9,115 @@ const {
   deleteUsersExercise,
 } = require('../controllers/exercisesController');
 
-router.get('/exercises/private', authenticateToken, async (req, res) => {
-  const userId = req.user.id;
-  const filters = req.query;
+router.get('/exercises/private', authenticateToken, async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const filters = req.query;
 
-  const exercises = await getAllUsersExercises(userId, filters);
+    const exercises = await getAllUsersExercises(userId, filters);
 
-  res.json(exercises.exercises);
+    res.json(exercises.exercises);
+  } catch (err) {
+    next(err);
+  }
 });
 
-router.get('/exercises/private/:id', authenticateToken, async (req, res) => {
-  const exerciseId = req.params.id;
-  const userId = req.user.id;
+router.get(
+  '/exercises/private/:id',
+  authenticateToken,
+  async (req, res, next) => {
+    try {
+      const exerciseId = req.params.id;
+      const userId = req.user.id;
 
-  const exercise = await getUsersExerciseById(userId, exerciseId);
+      const exercise = await getUsersExerciseById(userId, exerciseId);
 
-  res.json(exercise.exercise);
+      res.json(exercise.exercise);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+router.post('/exercises/private', authenticateToken, async (req, res, next) => {
+  try {
+    const {
+      name,
+      description,
+      category,
+      muscle_group,
+      difficulty,
+      is_private,
+    } = req.body;
+
+    const userId = req.user.id;
+
+    const exercise = await createExercise(
+      userId,
+      name,
+      description,
+      category,
+      muscle_group,
+      difficulty,
+      is_private
+    );
+
+    res.json(exercise.exercise);
+  } catch (err) {
+    next(err);
+  }
 });
 
-router.post('/exercises/private', authenticateToken, async (req, res) => {
-  const { name, description, category, muscle_group, difficulty, is_private } =
-    req.body;
+router.put(
+  '/exercises/private/:id',
+  authenticateToken,
+  async (req, res, next) => {
+    try {
+      const {
+        name,
+        description,
+        category,
+        muscle_group,
+        difficulty,
+        is_private,
+      } = req.body;
 
-  const userId = req.user.id;
+      const exerciseId = req.params.id;
+      const userId = req.user.id;
 
-  const exercise = await createExercise(
-    userId,
-    name,
-    description,
-    category,
-    muscle_group,
-    difficulty,
-    is_private
-  );
+      const exercise = await updateUsersExercise(
+        userId,
+        name,
+        description,
+        category,
+        muscle_group,
+        difficulty,
+        is_private,
+        exerciseId
+      );
 
-  res.json(exercise.exercise);
-});
+      res.json(exercise.exercise);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
-router.put('/exercises/private/:id', authenticateToken, async (req, res) => {
-  const { name, description, category, muscle_group, difficulty, is_private } =
-    req.body;
+router.delete(
+  '/exercises/private/:id',
+  authenticateToken,
+  async (req, res, next) => {
+    try {
+      const exerciseId = req.params.id;
+      const userId = req.user.id;
 
-  const exerciseId = req.params.id;
-  const userId = req.user.id;
+      const exercise = await deleteUsersExercise(userId, exerciseId);
 
-  const exercise = await updateUsersExercise(
-    userId,
-    name,
-    description,
-    category,
-    muscle_group,
-    difficulty,
-    is_private,
-    exerciseId
-  );
-
-  res.json(exercise.exercise);
-});
-
-router.delete('/exercises/private/:id', authenticateToken, async (req, res) => {
-  const exerciseId = req.params.id;
-  const userId = req.user.id;
-
-  const exercise = await deleteUsersExercise(userId, exerciseId);
-
-  res.json(exercise);
-});
+      res.json(exercise);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 module.exports = router;

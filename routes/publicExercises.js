@@ -8,19 +8,31 @@ const {
   getPublicExerciseById,
 } = require('../controllers/exercisesController.js');
 
-router.get('/exercises/public', authenticateToken, async (req, res) => {
-  const filters = req.query;
-  const exercises = await getAllPublicExercises(filters);
+router.get('/exercises/public', authenticateToken, async (req, res, next) => {
+  try {
+    const filters = req.query;
+    const exercises = await getAllPublicExercises(filters);
 
-  res.json(exercises.exercises);
+    res.json(exercises.exercises);
+  } catch (err) {
+    next(err);
+  }
 });
 
-router.get('/exercises/public/:id', authenticateToken, async (req, res) => {
-  const exerciseId = req.params.id;
+router.get(
+  '/exercises/public/:id',
+  authenticateToken,
+  async (req, res, next) => {
+    try {
+      const exerciseId = req.params.id;
 
-  const exercise = await getPublicExerciseById(exerciseId);
+      const exercise = await getPublicExerciseById(exerciseId);
 
-  res.json(exercise.exercise);
-});
+      res.json(exercise.exercise);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 module.exports = router;

@@ -6,21 +6,29 @@ const {
   logUserWeight,
 } = require('../controllers/weightController');
 
-router.get('/weight/history', authenticateToken, async (req, res) => {
-  const userId = req.user.id;
+router.get('/weight/history', authenticateToken, async (req, res, next) => {
+  try {
+    const userId = req.user.id;
 
-  const weightHistory = await getUserWeightHistory(userId);
+    const weightHistory = await getUserWeightHistory(userId);
 
-  res.json(weightHistory);
+    res.json(weightHistory);
+  } catch (err) {
+    next(err);
+  }
 });
 
-router.post('/weight', authenticateToken, async (req, res) => {
-  const userId = req.user.id;
-  const newWeight = req.body.weight_kg;
+router.post('/weight', authenticateToken, async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const newWeight = req.body.weight_kg;
 
-  const weightLog = await logUserWeight(userId, newWeight);
+    const weightLog = await logUserWeight(userId, newWeight);
 
-  res.status(201).json(weightLog);
+    res.status(201).json(weightLog);
+  } catch (err) {
+    next(err);
+  }
 });
 
 router, (module.exports = router);
