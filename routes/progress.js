@@ -5,7 +5,8 @@ const { getProgressSummary } = require('../controllers/getProgressSummary');
 
 router.get('/progress/summary', authenticateToken, async (req, res) => {
   const userId = req.user.id;
-  const summary = await getProgressSummary(userId);
+  const { startDate, endDate } = req.query;
+  const summary = await getProgressSummary(userId, startDate, endDate);
   res.json(summary);
 });
 

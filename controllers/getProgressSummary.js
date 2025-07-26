@@ -1,32 +1,18 @@
 const db = require('../database/db');
 
-const getWeekStart = () => {
-  const now = new Date();
-  const day = now.getDay() || 7;
-  now.setHours(0, 0, 0, 0);
-  now.setDate(now.getDate() - day + 1);
-  return now;
-};
+const getProgressSummary = async (userId, startDate, endDate) => {
+  const startPeriod = startDate ? new Date(startDate) : new Date(0);
+  const endPeriod = endDate ? new Date(endDate) : new Date();
 
-const calculateWeightChange = (weightEntries) => {
-  if (weightEntries.length >= 2) {
-    const first = Number(weightEntries[0].weight_kg);
-    const last = Number(weightEntries[weightEntries.length - 1].weight_kg);
-    return last - first;
-  }
-  return null;
-};
-
-const getProgressSummary = async (userId) => {
-  const weekStart = getWeekStart();
   const completedWorkouts = await db.query(
     `
         SELECT COUNT(*) 
         FROM workout_history 
         WHERE user_id = $1 
         AND completed_at >= $2
+        AND completed_at <= $3
         `,
-    [userId, weekStart]
+    [userId, startPeriod, endPeriod]
   );
 
   const listOfCompletedWorkouts = await db.query(
@@ -36,9 +22,10 @@ const getProgressSummary = async (userId) => {
         JOIN workouts w ON wh.workout_id = w.id
         WHERE wh.user_id = $1
         AND wh.completed_at >= $2
+        AND wh.completed_at <= $3
         ORDER BY wh.completed_at DESC
     `,
-    [userId, weekStart]
+    [userId, startPeriod, endPeriod]
   );
 
   const weightEntries = await db.query(
@@ -47,17 +34,16 @@ const getProgressSummary = async (userId) => {
         FROM weight_history
         WHERE user_id = $1
         AND recorded_at >= $2
+        AND recorded_at <= $3
         ORDER BY recorded_at ASC
     `,
-    [userId, weekStart]
+    [userId, startPeriod, endPeriod]
   );
-
-  const weeklyWeightChange = calculateWeightChange(weightEntries.rows);
 
   return {
     completedWorkouts: completedWorkouts.rows[0].count,
     listOfCompletedWorkouts: listOfCompletedWorkouts.rows,
-    weeklyWeightChange,
+    weight: weightEntries.rows,
   };
 };
 
