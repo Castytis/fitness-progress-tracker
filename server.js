@@ -19,6 +19,7 @@ const workoutHistoryRouter = require('./routes/workoutHistory.js');
 const favoriteWorkoutsRouter = require('./routes/favoriteWorkouts.js');
 const progressRouter = require('./routes/progress.js');
 const exportWorkoutsRouter = require('./routes/exportWorkouts.js');
+const trainerChatRouter = require('./routes/trainerChat.js');
 
 app.use(express.json());
 
@@ -34,6 +35,7 @@ app.use(workoutHistoryRouter);
 app.use(favoriteWorkoutsRouter);
 app.use(progressRouter);
 app.use(exportWorkoutsRouter);
+app.use(trainerChatRouter);
 
 app.use(errorHandler);
 
