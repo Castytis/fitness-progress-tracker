@@ -7,6 +7,7 @@ const db = require('./database/db');
 
 const errorHandler = require('./middleware/errorHandler.js');
 
+const setupSwagger = require('./docs/swagger.js');
 const authRouter = require('./routes/auth.js');
 const dashboardRouter = require('./routes/dashboard.js');
 const privateExercisesRouter = require('./routes/privateExercises.js');
@@ -21,6 +22,7 @@ const progressRouter = require('./routes/progress.js');
 const exportWorkoutsRouter = require('./routes/exportWorkouts.js');
 const trainerChatRouter = require('./routes/trainerChat.js');
 
+setupSwagger(app);
 app.use(express.json());
 
 app.use(authRouter);
