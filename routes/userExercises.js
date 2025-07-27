@@ -9,7 +9,7 @@ const {
   deleteUsersExercise,
 } = require('../controllers/exercisesController');
 
-router.get('/exercises/private', authenticateToken, async (req, res, next) => {
+router.get('/exercises/user', authenticateToken, async (req, res, next) => {
   try {
     const userId = req.user.id;
     const filters = req.query;
@@ -22,24 +22,20 @@ router.get('/exercises/private', authenticateToken, async (req, res, next) => {
   }
 });
 
-router.get(
-  '/exercises/private/:id',
-  authenticateToken,
-  async (req, res, next) => {
-    try {
-      const exerciseId = req.params.id;
-      const userId = req.user.id;
+router.get('/exercises/user/:id', authenticateToken, async (req, res, next) => {
+  try {
+    const exerciseId = req.params.id;
+    const userId = req.user.id;
 
-      const exercise = await getUsersExerciseById(userId, exerciseId);
+    const exercise = await getUsersExerciseById(userId, exerciseId);
 
-      res.json(exercise.exercise);
-    } catch (err) {
-      next(err);
-    }
+    res.json(exercise.exercise);
+  } catch (err) {
+    next(err);
   }
-);
+});
 
-router.post('/exercises/private', authenticateToken, async (req, res, next) => {
+router.post('/exercises/user', authenticateToken, async (req, res, next) => {
   try {
     const {
       name,
@@ -68,43 +64,39 @@ router.post('/exercises/private', authenticateToken, async (req, res, next) => {
   }
 });
 
-router.put(
-  '/exercises/private/:id',
-  authenticateToken,
-  async (req, res, next) => {
-    try {
-      const {
-        name,
-        description,
-        category,
-        muscle_group,
-        difficulty,
-        is_private,
-      } = req.body;
+router.put('/exercises/user/:id', authenticateToken, async (req, res, next) => {
+  try {
+    const {
+      name,
+      description,
+      category,
+      muscle_group,
+      difficulty,
+      is_private,
+    } = req.body;
 
-      const exerciseId = req.params.id;
-      const userId = req.user.id;
+    const exerciseId = req.params.id;
+    const userId = req.user.id;
 
-      const exercise = await updateUsersExercise(
-        userId,
-        name,
-        description,
-        category,
-        muscle_group,
-        difficulty,
-        is_private,
-        exerciseId
-      );
+    const exercise = await updateUsersExercise(
+      userId,
+      name,
+      description,
+      category,
+      muscle_group,
+      difficulty,
+      is_private,
+      exerciseId
+    );
 
-      res.json(exercise.exercise);
-    } catch (err) {
-      next(err);
-    }
+    res.json(exercise.exercise);
+  } catch (err) {
+    next(err);
   }
-);
+});
 
 router.delete(
-  '/exercises/private/:id',
+  '/exercises/user/:id',
   authenticateToken,
   async (req, res, next) => {
     try {
