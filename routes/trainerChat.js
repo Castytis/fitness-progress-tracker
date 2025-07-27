@@ -12,8 +12,9 @@ router.post(
   validateTrainerQuestion,
   async (req, res, next) => {
     try {
+      const userId = req.user.id;
       const { question } = req.body;
-      const answer = await askTrainer(question);
+      const answer = await askTrainer(question, userId);
       res.json({ answer });
     } catch (err) {
       next(err);
