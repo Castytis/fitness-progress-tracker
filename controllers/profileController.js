@@ -56,7 +56,12 @@ const updateUserProfile = async (userId, profileData) => {
     ]
   );
 
-  return { profile: result.rows[0] };
+  const profile = result.rows[0];
+  if (profile) {
+    delete profile.password_hash;
+  }
+
+  return { profile };
 };
 
 module.exports = { getUserProfile, updateUserProfile };
