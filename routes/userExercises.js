@@ -13,7 +13,7 @@ const {
  * @swagger
  * /exercises/user:
  *   get:
- *     summary: Get all exercises created by the authenticated user
+ *     summary: Get all exercises created by the user
  *     tags: [User Exercises]
  *     security:
  *       - bearerAuth: []
@@ -82,7 +82,7 @@ router.get('/exercises/user', authenticateToken, async (req, res, next) => {
  * @swagger
  * /exercises/user/{id}:
  *   get:
- *     summary: Get a specific exercise created by the authenticated user
+ *     summary: Get a specific exercise created by the user
  *     tags: [User Exercises]
  *     security:
  *       - bearerAuth: []
@@ -142,7 +142,7 @@ router.get('/exercises/user/:id', authenticateToken, async (req, res, next) => {
  * @swagger
  * /exercises/user:
  *   post:
- *     summary: Create a new exercise for the authenticated user
+ *     summary: Create a new exercise for the user
  *     tags: [User Exercises]
  *     security:
  *       - bearerAuth: []
@@ -230,7 +230,7 @@ router.post('/exercises/user', authenticateToken, async (req, res, next) => {
  * @swagger
  * /exercises/user/{id}:
  *   put:
- *     summary: Update an exercise created by the authenticated user
+ *     summary: Update an exercise created by the user
  *     tags: [User Exercises]
  *     security:
  *       - bearerAuth: []
@@ -329,7 +329,7 @@ router.put('/exercises/user/:id', authenticateToken, async (req, res, next) => {
  * @swagger
  * /exercises/user/{id}:
  *   delete:
- *     summary: Delete an exercise created by the authenticated user
+ *     summary: Delete an exercise created by the user
  *     tags: [User Exercises]
  *     security:
  *       - bearerAuth: []

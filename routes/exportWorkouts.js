@@ -3,6 +3,25 @@ const router = express.Router();
 const authenticateToken = require('../middleware/authMiddleware');
 const { exportFavoriteWorkouts } = require('../controllers/exportControler');
 
+/**
+ * @swagger
+ * /workouts/favorite/export/csv:
+ *   get:
+ *     summary: Export user's favorite workouts as a CSV file
+ *     tags: [Favorite Workouts]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: CSV file containing favorite workouts
+ *         content:
+ *           text/csv:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       401:
+ *         description: Unauthorized
+ */
 router.get(
   '/workouts/favorite/export/csv',
   authenticateToken,

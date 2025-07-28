@@ -10,7 +10,7 @@ const {
  * @swagger
  * /weight/history:
  *   get:
- *     summary: Get the authenticated user's weight history
+ *     summary: Get the user's weight history
  *     tags: [Weight Tracking]
  *     security:
  *       - bearerAuth: []
@@ -52,7 +52,7 @@ router.get('/weight/history', authenticateToken, async (req, res, next) => {
  * @swagger
  * /weight:
  *   post:
- *     summary: Log a new weight for the authenticated user
+ *     summary: Log a new weight for the user
  *     tags: [Weight Tracking]
  *     security:
  *       - bearerAuth: []

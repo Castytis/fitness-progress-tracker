@@ -10,7 +10,7 @@ const {
  * @swagger
  * /profile:
  *   get:
- *     summary: Get the authenticated user's profile
+ *     summary: Get the user's profile
  *     tags: [Profile]
  *     security:
  *       - bearerAuth: []
@@ -63,7 +63,7 @@ router.get('/profile', authenticateToken, async (req, res, next) => {
  * @swagger
  * /profile:
  *   put:
- *     summary: Update the authenticated user's profile
+ *     summary: Update the user's profile
  *     tags: [Profile]
  *     security:
  *       - bearerAuth: []
