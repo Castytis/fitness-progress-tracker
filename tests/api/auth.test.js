@@ -1,6 +1,5 @@
 const { test, expect, request } = require('@playwright/test');
-
-const baseURL = 'http://localhost:3000';
+const { baseURL } = require('../helpers/constants');
 
 test.describe('Auth', () => {
   let apiContext;

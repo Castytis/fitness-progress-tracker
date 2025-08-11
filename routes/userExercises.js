@@ -115,8 +115,8 @@ router.get('/exercises/user', authenticateToken, async (req, res, next) => {
  *                   type: string
  *                 is_private:
  *                   type: boolean
- *                  created_by:
- *                     type: integer
+ *                 created_by:
+ *                   type: integer
  *                 created_at:
  *                   type: string
  *                   format: date-time
